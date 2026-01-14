@@ -1,2 +1,2 @@
-﻿using var game = new MazeGameT.Game1();
+﻿using var game = new MazeGame.MazeGame();
 game.Run();

@@ -6,8 +6,19 @@ namespace MazeGame;
 
 public class MazeGame : Game
 {
+    private const int SCREEN_HEIGHT = 480;
+    private const int SCREEN_WIDTH = 640; 
+
+    private FirstPersonRenderer fpr;
+
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
+
+    private int[,] maze;
+
+    private Player player;
+
+    private Texture2D pixel;
 
     public MazeGame()
     {
@@ -19,16 +30,17 @@ public class MazeGame : Game
     protected override void Initialize()
     {
         // Set application dimensions
-        _graphics.PreferredBackBufferWidth = 640;
-        _graphics.PreferredBackBufferHeight = 480;
+        _graphics.PreferredBackBufferWidth = SCREEN_WIDTH;
+        _graphics.PreferredBackBufferHeight = SCREEN_HEIGHT;
         _graphics.ApplyChanges();
 
         var logic = new MazeLogic();
 
-        int n = 10; // Logical maze size (n x n)
-        var maze = logic.GenerateMaze(n);
+        int n = 5; // Logical maze size (n x n)
+        maze = logic.GenerateMaze(n);
         logic.PrintMaze();
-        logic.PrintActualMaze();
+
+        player = new Player(1.25f, 1.25f, 0);
 
         base.Initialize();
     }
@@ -37,7 +49,10 @@ public class MazeGame : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-        // TODO: use this.Content to load your game content here
+        pixel = new Texture2D(GraphicsDevice, 1, 1);
+        pixel.SetData([Color.White]);
+
+        fpr = new FirstPersonRenderer(maze, player, _spriteBatch, pixel, SCREEN_WIDTH, SCREEN_HEIGHT);
     }
 
     protected override void Update(GameTime gameTime)
@@ -45,16 +60,20 @@ public class MazeGame : Game
         if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        // TODO: Add your update logic here
+        player.Update(gameTime);
 
         base.Update(gameTime);
     }
 
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(Color.CornflowerBlue);
+        GraphicsDevice.Clear(Color.Black);
 
-        // TODO: Add your drawing code here
+        _spriteBatch.Begin();
+
+        fpr.Render();
+
+        _spriteBatch.End();
 
         base.Draw(gameTime);
     }

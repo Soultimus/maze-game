@@ -71,7 +71,7 @@ public class MazeGame : Game
 
         _spriteBatch.Begin();
 
-        fpr.Render();
+        //fpr.Render();
 
         _spriteBatch.End();
 

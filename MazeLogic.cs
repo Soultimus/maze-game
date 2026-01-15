@@ -65,8 +65,27 @@ class MazeLogic
         }
 
         // Start (8) and End (9)
-        Maze[1, 0] = 8;
-        Maze[size - 2, size - 1] = 9;
+        while (true)
+        {
+            int startPos = rand.Next(1, size - 1);
+
+            if (Maze[startPos, 1] == 0) // Ensure you don't start enclosed
+            {
+                Maze[startPos, 0] = 8;
+                break;
+            }
+        }
+
+        while (true)
+        {
+            int endPos = rand.Next(1, size - 1);
+
+            if (Maze[endPos, size - 2] == 0) // Likewise for end
+            {
+                Maze[endPos, size - 1] = 9;
+                break;
+            }
+        }
 
         return Maze;
     }

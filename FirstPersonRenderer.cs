@@ -97,8 +97,6 @@ class FirstPersonRenderer
         bool hit = false;
         int side = 0; // 0 = vertical wall hit, 1 = horizontal wall hit
 
-
-
         while (!hit)
         {
             if (sideDistX < sideDistY)

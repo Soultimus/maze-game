@@ -40,7 +40,7 @@ public class MazeGame : Game
         maze = logic.GenerateMaze(n);
         logic.PrintMaze();
 
-        player = new Player(1.25f, 1.25f, 0);
+        player = new Player(1.5f, logic.PlayerSpawn, 0);
 
         base.Initialize();
     }
@@ -71,7 +71,7 @@ public class MazeGame : Game
 
         _spriteBatch.Begin();
 
-        //fpr.Render();
+        fpr.Render();
 
         _spriteBatch.End();
 

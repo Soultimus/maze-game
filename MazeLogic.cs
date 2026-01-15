@@ -8,6 +8,8 @@ class MazeLogic
 {
     public int[,] Maze {get; set;}
 
+    public float PlayerSpawn {get; private set;}
+
     public int[,] GenerateMaze(int n)
     {
         int size = 2 * n + 1; // Pixel maze size
@@ -72,6 +74,7 @@ class MazeLogic
             if (Maze[startPos, 1] == 0) // Ensure you don't start enclosed
             {
                 Maze[startPos, 0] = 8;
+                PlayerSpawn = startPos + 0.5f;
                 break;
             }
         }

@@ -10,18 +10,16 @@ public class MazeGame : Game
     private const int SCREEN_HEIGHT = 480;
     private const int SCREEN_WIDTH = 640; 
 
-    private FirstPersonRenderer fpr;
-
+    private bool _mapUsed;
+    private Dictionary<int, Texture2D> _wallTextures;
+    private FirstPersonRenderer _fpr;
     private GraphicsDeviceManager _graphics;
-    private SpriteBatch _spriteBatch;
-
-    private int[,] _maze;
-
+    private KeyboardState _currentKeyboardState;
+    private KeyboardState _previousKeyboardState;
+    private MazeLogic _ml;
     private Player _player;
-
+    private SpriteBatch _spriteBatch;
     private Texture2D _pixel;
-
-    Dictionary<int, Texture2D> _wallTextures;
 
     public MazeGame()
     {
@@ -37,13 +35,14 @@ public class MazeGame : Game
         _graphics.PreferredBackBufferHeight = SCREEN_HEIGHT;
         _graphics.ApplyChanges();
 
-        var ml = new MazeLogic();
+        _mapUsed = false;
+
+        _ml = new MazeLogic();
 
         int n = 5; // Logical maze size (n x n)
-        _maze = ml.GenerateMaze(n);
-        ml.PrintMaze();
+        _ml.GenerateMaze(n);
 
-        _player = new Player(1.5f, ml.PlayerSpawnY, 0);
+        _player = new Player(1.5f, _ml.PlayerSpawnY, 0);
 
         _wallTextures = new Dictionary<int, Texture2D>();
 
@@ -62,13 +61,22 @@ public class MazeGame : Game
         _wallTextures[3] = Content.Load<Texture2D>("textures/entrance");
         _wallTextures[4] = Content.Load<Texture2D>("textures/exit");
 
-        fpr = new FirstPersonRenderer(_maze, _player, _spriteBatch, _wallTextures, SCREEN_WIDTH, SCREEN_HEIGHT);
+        _fpr = new FirstPersonRenderer(_ml.Maze, _player, _spriteBatch, _wallTextures, SCREEN_WIDTH, SCREEN_HEIGHT);
     }
 
     protected override void Update(GameTime gameTime)
     {
+        _previousKeyboardState = _currentKeyboardState;
+        _currentKeyboardState = Keyboard.GetState();
+
         if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
+
+        if (!_mapUsed && IsKeyPressed(Keys.M))
+        {
+            _mapUsed = true;
+            _ml.PrintMaze();
+        }
 
         _player.Update(gameTime);
 
@@ -83,10 +91,15 @@ public class MazeGame : Game
 
         _spriteBatch.Draw(_pixel, new Rectangle(0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2), Color.DimGray);
 
-        fpr.Render();
+        _fpr.Render();
 
         _spriteBatch.End();
 
         base.Draw(gameTime);
+    }
+
+    private bool IsKeyPressed(Keys key)
+    {
+        return _currentKeyboardState.IsKeyDown(key) && _previousKeyboardState.IsKeyUp(key);
     }
 }

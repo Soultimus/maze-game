@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -12,15 +13,17 @@ class FirstPersonRenderer
     private Player _player;
     private SpriteBatch _spriteBatch;
     private Texture2D _pixel;
+    private Dictionary<int, Texture2D> _wallTextures;
     private int _screenWidth;
     private int _screenHeight;
     
-    public FirstPersonRenderer(int[,] maze, Player player, SpriteBatch spriteBatch, Texture2D pixel, int screenWidth, int screenHeight)
+    public FirstPersonRenderer(int[,] maze, Player player, SpriteBatch spriteBatch, Texture2D pixel, Dictionary<int, Texture2D> wallTextures, int screenWidth, int screenHeight)
     {
         this._maze = maze;
         this._player = player;
         this._spriteBatch = spriteBatch;
         this._pixel = pixel;
+        this._wallTextures = wallTextures;
         this._screenWidth = screenWidth;
         this._screenHeight = screenHeight;
     }
@@ -30,9 +33,9 @@ class FirstPersonRenderer
         for (int x = 0; x < _screenWidth; x++)
         {
             float rayAngle = CalculateRayAngle(x);
-            (float distance, int wallType) = CastRayDDA(rayAngle);
+            (float distance, float wallX, Texture2D texture) = CastRayDDA(rayAngle);
             int wallHeight = CalculateWallHeight(distance);
-            DrawWallSlice(x, wallHeight, wallType);
+            DrawWallSlice(x, wallHeight, wallX, texture);
         }
     }
 
@@ -47,7 +50,7 @@ class FirstPersonRenderer
         return _player.Angle + angleOffset;
     }
 
-    private (float, int) CastRayDDA(float rayAngle)
+    private (float, float, Texture2D) CastRayDDA(float rayAngle)
     {
         int wallType = 0;
 
@@ -130,10 +133,14 @@ class FirstPersonRenderer
         else
             distance = sideDistY - deltaY;
 
+        // Calculate where on the wall we hit (0 = vertical)
+        float wallX = (side == 0) ? _player.Position.Y + distance * rayDirY : _player.Position.X + distance * rayDirX;
+        wallX -= MathF.Floor(wallX);
+
         // Correct fisheye
         distance *= MathF.Cos(rayAngle - _player.Angle);
 
-        return (distance, wallType);
+        return (distance, wallX, _wallTextures[wallType]);
     }
 
     private int CalculateWallHeight(float distance)
@@ -142,18 +149,15 @@ class FirstPersonRenderer
         return (int)(WALL_SCALE / distance);
     }
 
-    private void DrawWallSlice(int x, int wallHeight, int wallType)
+    private void DrawWallSlice(int x, int wallHeight, float wallX, Texture2D texture)
     {
-        int drawY = (_screenHeight - wallHeight) / 2;
+        int textureX = (int)(wallX * texture.Width);
 
-        Color color = wallType switch
-        {
-            8 => Color.CornflowerBlue,      // Start
-            9 => Color.Green,               // End
-            _ => Color.Gray                 // Normal walls
-        };
+        Rectangle sourceRect = new Rectangle(textureX, 0, 1, texture.Height);
+
+        int drawY = (_screenHeight - wallHeight) / 2;
     
         Rectangle destRect = new Rectangle(x, drawY, 1, wallHeight);
-        _spriteBatch.Draw(_pixel, destRect, color);
+        _spriteBatch.Draw(texture, destRect, sourceRect, Color.White);
     }
 }

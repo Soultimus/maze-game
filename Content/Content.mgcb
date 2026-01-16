@@ -13,3 +13,46 @@
 
 #---------------------------------- Content ---------------------------------#
 
+# cobble
+/build:cobble.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyEnabled=false
+/processorParam:PremultiplyAlpha=true
+/processorParam:GenerateMipmaps=false
+/processorParam:ResizeToPowerOfTwo=false
+/processorParam:MakeSquare=false
+/processorParam:TextureFormat=Color
+
+# vine_cobble
+/build:vine_cobble.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyEnabled=false
+/processorParam:PremultiplyAlpha=true
+/processorParam:GenerateMipmaps=false
+/processorParam:ResizeToPowerOfTwo=false
+/processorParam:MakeSquare=false
+/processorParam:TextureFormat=Color
+
+# entrance
+/build:entrance.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyEnabled=false
+/processorParam:PremultiplyAlpha=true
+/processorParam:GenerateMipmaps=false
+/processorParam:ResizeToPowerOfTwo=false
+/processorParam:MakeSquare=false
+/processorParam:TextureFormat=Color
+
+# exit
+/build:exit.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyEnabled=false
+/processorParam:PremultiplyAlpha=true
+/processorParam:GenerateMipmaps=false
+/processorParam:ResizeToPowerOfTwo=false
+/processorParam:MakeSquare=false
+/processorParam:TextureFormat=Color

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -14,11 +15,13 @@ public class MazeGame : Game
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
 
-    private int[,] maze;
+    private int[,] _maze;
 
-    private Player player;
+    private Player _player;
 
-    private Texture2D pixel;
+    private Texture2D _pixel;
+
+    Dictionary<int, Texture2D> _wallTextures;
 
     public MazeGame()
     {
@@ -34,13 +37,15 @@ public class MazeGame : Game
         _graphics.PreferredBackBufferHeight = SCREEN_HEIGHT;
         _graphics.ApplyChanges();
 
-        var logic = new MazeLogic();
+        var ml = new MazeLogic();
 
         int n = 5; // Logical maze size (n x n)
-        maze = logic.GenerateMaze(n);
-        logic.PrintMaze();
+        _maze = ml.GenerateMaze(n);
+        ml.PrintMaze();
 
-        player = new Player(1.5f, logic.PlayerSpawn, 0);
+        _player = new Player(1.5f, ml.PlayerSpawn, 0);
+
+        _wallTextures = new Dictionary<int, Texture2D>();
 
         base.Initialize();
     }
@@ -49,10 +54,15 @@ public class MazeGame : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-        pixel = new Texture2D(GraphicsDevice, 1, 1);
-        pixel.SetData([Color.White]);
+        _pixel = new Texture2D(GraphicsDevice, 1, 1);
+        _pixel.SetData([Color.White]);
 
-        fpr = new FirstPersonRenderer(maze, player, _spriteBatch, pixel, SCREEN_WIDTH, SCREEN_HEIGHT);
+        _wallTextures[1] = Content.Load<Texture2D>("cobble");
+        _wallTextures[2] = Content.Load<Texture2D>("vine_cobble");
+        _wallTextures[3] = Content.Load<Texture2D>("entrance");
+        _wallTextures[4] = Content.Load<Texture2D>("exit");
+
+        fpr = new FirstPersonRenderer(_maze, _player, _spriteBatch, _pixel, _wallTextures, SCREEN_WIDTH, SCREEN_HEIGHT);
     }
 
     protected override void Update(GameTime gameTime)
@@ -60,7 +70,7 @@ public class MazeGame : Game
         if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        player.Update(gameTime);
+        _player.Update(gameTime);
 
         base.Update(gameTime);
     }
@@ -69,7 +79,7 @@ public class MazeGame : Game
     {
         GraphicsDevice.Clear(Color.Black);
 
-        _spriteBatch.Begin();
+        _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
 
         fpr.Render();
 

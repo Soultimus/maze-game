@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace MazeGame;
 
@@ -18,7 +17,7 @@ class MazeLogic
         // Fill with walls (1)
         for (int r = 0; r < size; r++)
             for (int c = 0; c < size; c++)
-                Maze[r, c] = 1;
+                Maze[r, c] = GetRandomCobbleNumber();
 
         // Open cell centers (0)
         for (int r = 0; r < n; r++)
@@ -66,14 +65,14 @@ class MazeLogic
             }
         }
 
-        // Start (8) and End (9)
+        // Start (3) and End (4)
         while (true)
         {
             int startPos = rand.Next(1, size - 1);
 
             if (Maze[startPos, 1] == 0) // Ensure you don't start enclosed
             {
-                Maze[startPos, 0] = 8;
+                Maze[startPos, 0] = 3;
                 PlayerSpawn = startPos + 0.5f;
                 break;
             }
@@ -85,12 +84,22 @@ class MazeLogic
 
             if (Maze[endPos, size - 2] == 0) // Likewise for end
             {
-                Maze[endPos, size - 1] = 9;
+                Maze[endPos, size - 1] = 4;
                 break;
             }
         }
 
         return Maze;
+    }
+
+    int GetRandomCobbleNumber()
+    {
+        Random rng = new Random();
+        int roll = rng.Next(1, 101);
+
+        // 70% chance cobble, 30% chance cobble with vines
+        if (roll <= 70) return 1;
+        return 2;
     }
 
     public void PrintMaze()
@@ -102,16 +111,15 @@ class MazeLogic
         {
             for (int c = 0; c < cols; c++) {
                 int tile = Maze[r, c];
-                if (tile == 1)
-                    Console.Write('█');
-                else if (tile == 0)
+
+                if (tile == 0)
                     Console.Write(' ');
-                else if (tile == 8)
+                else if (tile == 3)
                     Console.Write('S');
-                else if (tile == 9)
+                else if (tile == 4)
                     Console.Write('E');
                 else
-                    throw new ArgumentException("Invalid tile number was generated somehow: " + tile);
+                    Console.Write('█');
             }
             Console.WriteLine("");
         }

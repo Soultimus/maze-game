@@ -67,8 +67,8 @@ class FirstPersonRenderer
         float deltaY = (rayDirY == 0) ? 1e30f : MathF.Abs(1 / rayDirY);
 
         // Length of ray from current position to next x or y-side
-        float sideDistX = 0f;
-        float sideDistY = 0f;
+        float sideDistX = 0.0f;
+        float sideDistY = 0.0f;
 
         // What direction to step in x or y-direction (either +1 or -1)
         int stepX = 0;

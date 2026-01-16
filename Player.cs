@@ -48,6 +48,16 @@ class Player
             X -= dirX * moveStep;
             Y -= dirY * moveStep;
         }
+        if (keyboard.IsKeyDown(Keys.A))
+        {
+            X += dirY * moveStep;
+            Y -= dirX * moveStep;
+        }
+        if (keyboard.IsKeyDown(Keys.D))
+        {
+            X -= dirY * moveStep;
+            Y += dirX * moveStep;
+        }
     }
 
     public Vector2 Position => new Vector2(X, Y);

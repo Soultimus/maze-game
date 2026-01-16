@@ -5,29 +5,48 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MazeGame;
 
-class FirstPersonRenderer
+/// <summary>
+/// Renders the maze from a first-person perspective using raycasting
+/// </summary>
+public class FirstPersonRenderer
 {
     private const int WALL_SCALE = 480;
 
     private int[,] _maze;
     private Player _player;
     private SpriteBatch _spriteBatch;
-    private Texture2D _pixel;
     private Dictionary<int, Texture2D> _wallTextures;
     private int _screenWidth;
     private int _screenHeight;
     
-    public FirstPersonRenderer(int[,] maze, Player player, SpriteBatch spriteBatch, Texture2D pixel, Dictionary<int, Texture2D> wallTextures, int screenWidth, int screenHeight)
+    /// <summary>
+    /// Creates a new first-person renderer
+    /// </summary>
+    /// <param name="maze">The game's maze</param>
+    /// <param name="player">Player</param>
+    /// <param name="spriteBatch">Monogame's spritebatch</param>
+    /// <param name="wallTextures">Dictionary containing loaded textures for walls</param>
+    /// <param name="screenWidth">The program's screen width</param>
+    /// <param name="screenHeight">The program's screen height</param>
+    public FirstPersonRenderer(
+        int[,] maze,
+        Player player,
+        SpriteBatch spriteBatch,
+        Dictionary<int, Texture2D> wallTextures,
+        int screenWidth,
+        int screenHeight)
     {
-        this._maze = maze;
-        this._player = player;
-        this._spriteBatch = spriteBatch;
-        this._pixel = pixel;
-        this._wallTextures = wallTextures;
-        this._screenWidth = screenWidth;
-        this._screenHeight = screenHeight;
+        _maze = maze;
+        _player = player;
+        _spriteBatch = spriteBatch;
+        _wallTextures = wallTextures;
+        _screenWidth = screenWidth;
+        _screenHeight = screenHeight;
     }
 
+    /// <summary>
+    /// Renders the entire scene by casting one ray per screen column
+    /// </summary>
     public void Render()
     {
         for (int x = 0; x < _screenWidth; x++)
@@ -39,6 +58,13 @@ class FirstPersonRenderer
         }
     }
 
+    /// <summary>
+    /// Calculates the angle of a ray based on its screen X position
+    /// </summary>
+    /// <param name="screenX">The X coordinate of the screen column</param>
+    /// <returns>
+    /// The angle of the ray in radians
+    /// </returns>
     private float CalculateRayAngle(int screenX)
     {
         // How far we are across the screen
@@ -50,6 +76,13 @@ class FirstPersonRenderer
         return _player.Angle + angleOffset;
     }
 
+    /// <summary>
+    /// Casts a ray into the maze using the DDA algorithm to find the nearest wall
+    /// </summary>
+    /// <param name="rayAngle">The angle of the ray in radians</param>
+    /// <returns>
+    /// A tuple containing the distance to the wall, the horizontal texture coordinate, and the appropriate wall texture
+    /// </returns>
     private (float, float, Texture2D) CastRayDDA(float rayAngle)
     {
         int wallType = 0;
@@ -99,7 +132,6 @@ class FirstPersonRenderer
 
         bool hit = false;
         int side = 0; // 0 = vertical wall hit, 1 = horizontal wall hit
-
         while (!hit)
         {
             if (sideDistX < sideDistY)
@@ -151,12 +183,25 @@ class FirstPersonRenderer
         return (distance, wallX, _wallTextures[wallType]);
     }
 
+    /// <summary>
+    /// Calculates the on-screen height of a wall slice based on its distance.
+    /// </summary>
+    /// <param name="distance">Distance from the player to the wall</param>
+    /// <returns>
+    /// Height of line to draw on screen
+    /// </returns>
     private int CalculateWallHeight(float distance)
     {
-        // Calculate height of line to draw on screen
         return (int)(WALL_SCALE / distance);
     }
 
+    /// <summary>
+    /// Draws a single vertical slice of a wall to the screen
+    /// </summary>
+    /// <param name="x">Screen X coordinate of the slice</param>
+    /// <param name="wallHeight">Height of the wall slice</param>
+    /// <param name="wallX">Horizontal texture coordinate (0–1)</param>
+    /// <param name="texture">Wall texture to draw</param>
     private void DrawWallSlice(int x, int wallHeight, float wallX, Texture2D texture)
     {
         int textureX = (int)(wallX * texture.Width);

@@ -3,18 +3,34 @@ using System.Collections.Generic;
 
 namespace MazeGame;
 
-class MazeLogic
+/// <summary>
+/// Handles maze generation and related logic
+/// </summary>
+public class MazeLogic
 {
+    /// <summary>
+    /// The generated maze represented as a 2D grid of integers
+    /// </summary>
     public int[,] Maze {get; set;}
 
-    public float PlayerSpawn {get; private set;}
+    /// <summary>
+    /// Player's initial Y position
+    /// </summary>
+    public float PlayerSpawnY {get; private set;}
 
+    /// <summary>
+    /// Generates a maze using Kruskal's algorithm
+    /// </summary>
+    /// <param name="n">Number of logical maze cells per side</param>
+    /// <returns>
+    /// The generated pixel-based maze grid
+    /// </returns>
     public int[,] GenerateMaze(int n)
     {
         int size = 2 * n + 1; // Pixel maze size
         Maze = new int[size, size];
 
-        // Fill with walls (1)
+        // Fill with walls (1 or 2)
         for (int r = 0; r < size; r++)
             for (int c = 0; c < size; c++)
                 Maze[r, c] = GetRandomCobbleNumber();
@@ -65,7 +81,7 @@ class MazeLogic
             }
         }
 
-        // Start (3) and End (4)
+        // Randomize the start (3) and end (4) of the maze
         while (true)
         {
             int startPos = rand.Next(1, size - 1);
@@ -73,7 +89,7 @@ class MazeLogic
             if (Maze[startPos, 1] == 0) // Ensure you don't start enclosed
             {
                 Maze[startPos, 0] = 3;
-                PlayerSpawn = startPos + 0.5f;
+                PlayerSpawnY = startPos + 0.5f;
                 break;
             }
         }
@@ -92,16 +108,24 @@ class MazeLogic
         return Maze;
     }
 
-    int GetRandomCobbleNumber()
+    /// <summary>
+    /// Returns a random cobble wall tile variant
+    /// </summary>
+    /// <returns>
+    /// 1 = normal cobblestone (70%) or 2 = cobblestone with vines (30%)
+    /// </returns>
+    private int GetRandomCobbleNumber()
     {
         Random rng = new Random();
         int roll = rng.Next(1, 101);
 
-        // 70% chance cobble, 30% chance cobble with vines
         if (roll <= 70) return 1;
         return 2;
     }
 
+    /// <summary>
+    /// Prints a visual representation of the maze to the console
+    /// </summary>
     public void PrintMaze()
     {
         int rows = Maze.GetLength(0);
@@ -125,7 +149,10 @@ class MazeLogic
         }
     }
 
-    public void PrintActualMaze()
+    /// <summary>
+    /// Prints the actual integer values of the maze grid
+    /// </summary>
+    public void PrintMazeAsIntegers()
     {
         int rows = Maze.GetLength(0);
         int cols = Maze.GetLength(1);

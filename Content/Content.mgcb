@@ -14,7 +14,7 @@
 #---------------------------------- Content ---------------------------------#
 
 # cobble
-/build:cobble.png
+/build:textures/cobble.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyEnabled=false
@@ -25,7 +25,7 @@
 /processorParam:TextureFormat=Color
 
 # vine_cobble
-/build:vine_cobble.png
+/build:textures/vine_cobble.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyEnabled=false
@@ -36,7 +36,7 @@
 /processorParam:TextureFormat=Color
 
 # entrance
-/build:entrance.png
+/build:textures/entrance.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyEnabled=false
@@ -47,7 +47,7 @@
 /processorParam:TextureFormat=Color
 
 # exit
-/build:exit.png
+/build:textures/exit.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyEnabled=false

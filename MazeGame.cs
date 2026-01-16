@@ -43,7 +43,7 @@ public class MazeGame : Game
         _maze = ml.GenerateMaze(n);
         ml.PrintMaze();
 
-        _player = new Player(1.5f, ml.PlayerSpawn, 0);
+        _player = new Player(1.5f, ml.PlayerSpawnY, 0);
 
         _wallTextures = new Dictionary<int, Texture2D>();
 
@@ -57,12 +57,12 @@ public class MazeGame : Game
         _pixel = new Texture2D(GraphicsDevice, 1, 1);
         _pixel.SetData([Color.White]);
 
-        _wallTextures[1] = Content.Load<Texture2D>("cobble");
-        _wallTextures[2] = Content.Load<Texture2D>("vine_cobble");
-        _wallTextures[3] = Content.Load<Texture2D>("entrance");
-        _wallTextures[4] = Content.Load<Texture2D>("exit");
+        _wallTextures[1] = Content.Load<Texture2D>("textures/cobble");
+        _wallTextures[2] = Content.Load<Texture2D>("textures/vine_cobble");
+        _wallTextures[3] = Content.Load<Texture2D>("textures/entrance");
+        _wallTextures[4] = Content.Load<Texture2D>("textures/exit");
 
-        fpr = new FirstPersonRenderer(_maze, _player, _spriteBatch, _pixel, _wallTextures, SCREEN_WIDTH, SCREEN_HEIGHT);
+        fpr = new FirstPersonRenderer(_maze, _player, _spriteBatch, _wallTextures, SCREEN_WIDTH, SCREEN_HEIGHT);
     }
 
     protected override void Update(GameTime gameTime)

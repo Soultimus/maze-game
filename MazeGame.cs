@@ -81,6 +81,8 @@ public class MazeGame : Game
 
         _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
 
+        _spriteBatch.Draw(_pixel, new Rectangle(0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2), Color.DimGray);
+
         fpr.Render();
 
         _spriteBatch.End();

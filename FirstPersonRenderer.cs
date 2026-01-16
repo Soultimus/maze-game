@@ -126,16 +126,24 @@ class FirstPersonRenderer
                 hit = true; // Hit the edge of the map
         }
 
-        // Get the actual distance to the wall
-        float distance;
-        if (side == 0)
+        // Get the actual distance to the wall and where on the wall we hit
+        float distance = 0.0f;
+        float wallX = 0.0f;
+        if (side == 0) // Vertical
+        {
             distance = sideDistX - deltaX;
-        else
+            wallX = _player.Position.Y + distance * rayDirY;
+        }
+        else // Horizontal
+        {
             distance = sideDistY - deltaY;
-
-        // Calculate where on the wall we hit (0 = vertical)
-        float wallX = (side == 0) ? _player.Position.Y + distance * rayDirY : _player.Position.X + distance * rayDirX;
+            wallX = _player.Position.X + distance * rayDirX;
+        }
         wallX -= MathF.Floor(wallX);
+
+        // Flip north and west side's textures
+        if ((side == 0 && stepX < 0) || (side == 1 && stepY > 0))
+            wallX = 1.0f - wallX;
 
         // Correct fisheye
         distance *= MathF.Cos(rayAngle - _player.Angle);

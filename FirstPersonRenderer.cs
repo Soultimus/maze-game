@@ -53,6 +53,9 @@ public class FirstPersonRenderer
         {
             float rayAngle = CalculateRayAngle(x);
             (float distance, float wallX, Texture2D texture) = CastRayDDA(rayAngle);
+            if (texture == null)
+                continue;
+                
             int wallHeight = CalculateWallHeight(distance);
             DrawWallSlice(x, wallHeight, wallX, texture);
         }
@@ -146,6 +149,9 @@ public class FirstPersonRenderer
                 mapY += stepY;
                 side = 1;
             }
+
+            if (mapX < 0 || mapX >= _maze.GetLength(1) || mapY < 0 || mapY >= _maze.GetLength(0))
+                return (0.0f, 0.0f, null); // Hit the edge of the map
             
             // Check wall hit
             if (_maze[mapY, mapX] > 0)
@@ -153,9 +159,6 @@ public class FirstPersonRenderer
                 hit = true;
                 wallType = _maze[mapY, mapX];
             }
-
-            if (mapX < 0 || mapX >= _maze.GetLength(1) || mapY < 0 || mapY >= _maze.GetLength(0))
-                hit = true; // Hit the edge of the map
         }
 
         // Get the actual distance to the wall and where on the wall we hit

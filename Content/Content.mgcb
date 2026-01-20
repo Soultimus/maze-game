@@ -56,3 +56,10 @@
 /processorParam:ResizeToPowerOfTwo=false
 /processorParam:MakeSquare=false
 /processorParam:TextureFormat=Color
+
+#begin fonts/big-shot.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:fonts/big-shot.spritefont

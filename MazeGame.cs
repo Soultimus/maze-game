@@ -25,8 +25,7 @@ public class MazeGame : Game
     private SpriteBatch _spriteBatch;
     private SpriteFont _spriteFont;
     private Texture2D _pixel;
-
-    private Stopwatch timer;
+    private Stopwatch _timer;
 
     public MazeGame()
     {
@@ -45,7 +44,7 @@ public class MazeGame : Game
         _levelCount = 0;
         _wallTextures = new Dictionary<int, Texture2D>();
         _ml = new MazeLogic();
-        timer = new Stopwatch();
+        _timer = new Stopwatch();
 
         // Logical maze size (n x n)
         _mazeSize = new Random();
@@ -68,7 +67,7 @@ public class MazeGame : Game
         _wallTextures[4] = Content.Load<Texture2D>("textures/exit");
 
         _fpr = new FirstPersonRenderer(_ml.Maze, _player, _spriteBatch, _wallTextures, SCREEN_WIDTH, SCREEN_HEIGHT);
-        timer.Start();
+        _timer.Start();
     }
 
     protected override void Update(GameTime gameTime)
@@ -100,9 +99,9 @@ public class MazeGame : Game
             }
             else
             {
-                timer.Stop();
+                _timer.Stop();
                 Console.Clear();
-                Console.WriteLine("Final time: " + timer.Elapsed.ToString(@"m\:ss"));
+                Console.WriteLine("Final time: " + _timer.Elapsed.ToString(@"m\:ss"));
                 Exit();
             }
 
@@ -121,15 +120,22 @@ public class MazeGame : Game
         // Render the maze
         _fpr.Render();
 
-        // Display the time in the right corner
-        string text = timer.Elapsed.ToString(@"m\:ss");
-        Vector2 textSize = _spriteFont.MeasureString(text) / 2;
-        // Position at top-right of the window
+        string levelText = $"LEVEL {_levelCount + 1}";
+        Vector2 textSize = _spriteFont.MeasureString(levelText) / 2;
         Vector2 position = new Vector2(
+            textSize.X,
+            12
+        );
+        _spriteBatch.DrawString(_spriteFont, levelText, position, Color.Yellow, 0, textSize, 1.0f, SpriteEffects.None, 0f);
+
+        // Display the time in the right corner
+        string timerText = _timer.Elapsed.ToString(@"m\:ss");
+        textSize = _spriteFont.MeasureString(timerText) / 2;
+        position = new Vector2(
             SCREEN_WIDTH - textSize.X,
             12
         );
-        _spriteBatch.DrawString(_spriteFont, text, position, Color.Yellow, 0, textSize, 1.0f, SpriteEffects.None, 0f);
+        _spriteBatch.DrawString(_spriteFont, timerText, position, Color.Yellow, 0, textSize, 1.0f, SpriteEffects.None, 0f);
 
         _spriteBatch.End();
 

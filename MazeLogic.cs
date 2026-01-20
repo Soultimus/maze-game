@@ -128,6 +128,7 @@ public class MazeLogic
     /// </summary>
     public void PrintMaze()
     {
+        Console.Clear();
         int rows = Maze.GetLength(0);
         int cols = Maze.GetLength(1);
 

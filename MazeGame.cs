@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -18,6 +19,7 @@ public class MazeGame : Game
     private KeyboardState _previousKeyboardState;
     private MazeLogic _ml;
     private Player _player;
+    private Random _mazeSize;
     private SpriteBatch _spriteBatch;
     private Texture2D _pixel;
 
@@ -35,16 +37,12 @@ public class MazeGame : Game
         _graphics.PreferredBackBufferHeight = SCREEN_HEIGHT;
         _graphics.ApplyChanges();
 
-        _mapUsed = false;
-
+        _wallTextures = new Dictionary<int, Texture2D>();
         _ml = new MazeLogic();
 
-        int n = 5; // Logical maze size (n x n)
-        _ml.GenerateMaze(n);
-
-        _player = new Player(1.5f, _ml.PlayerSpawnY, 0);
-
-        _wallTextures = new Dictionary<int, Texture2D>();
+        // Logical maze size (n x n)
+        _mazeSize = new Random();
+        GenerateWorld(_mazeSize.Next(5, 11));
 
         base.Initialize();
     }
@@ -80,6 +78,13 @@ public class MazeGame : Game
 
         _player.Update(gameTime);
 
+        int mapX = (int)_player.Position.X;
+        int mapY = (int)_player.Position.Y;
+
+        // Generate new map when goal was reached
+        if(_ml.Maze[mapY, mapX] == 4)
+            GenerateWorld(_mazeSize.Next(5, 11));
+
         base.Update(gameTime);
     }
 
@@ -101,5 +106,23 @@ public class MazeGame : Game
     private bool IsKeyPressed(Keys key)
     {
         return _currentKeyboardState.IsKeyDown(key) && _previousKeyboardState.IsKeyUp(key);
+    }
+
+    private void GenerateWorld(int size)
+    {
+        _mapUsed = false;
+
+        _ml.GenerateMaze(size);
+
+        _player = new Player(1.5f, _ml.PlayerSpawnY, 0);
+
+        _fpr = new FirstPersonRenderer(
+            _ml.Maze,
+            _player,
+            _spriteBatch,
+            _wallTextures,
+            SCREEN_WIDTH,
+            SCREEN_HEIGHT
+        );
     }
 }

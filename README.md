@@ -11,6 +11,5 @@ A DDA-based raycaster built with Monogame where you can explore a randomly gener
 
 ## Note: This is a work in progress
 Some things left to do:
-- Out-of-bounds handling
 - Actual game logic
 - Collision

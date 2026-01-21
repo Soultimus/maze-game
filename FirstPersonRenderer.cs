@@ -52,12 +52,12 @@ public class FirstPersonRenderer
         for (int x = 0; x < _screenWidth; x++)
         {
             float rayAngle = CalculateRayAngle(x);
-            (float distance, float wallX, Texture2D texture) = CastRayDDA(rayAngle);
+            (float distance, float brightness, float wallX, Texture2D texture) = CastRayDDA(rayAngle);
             if (texture == null)
                 continue;
                 
             int wallHeight = CalculateWallHeight(distance);
-            DrawWallSlice(x, wallHeight, wallX, texture);
+            DrawWallSlice(x, wallHeight, wallX, texture, brightness);
         }
     }
 
@@ -86,7 +86,7 @@ public class FirstPersonRenderer
     /// <returns>
     /// A tuple containing the distance to the wall, the horizontal texture coordinate, and the appropriate wall texture
     /// </returns>
-    private (float, float, Texture2D) CastRayDDA(float rayAngle)
+    private (float, float, float, Texture2D) CastRayDDA(float rayAngle)
     {
         int wallType = 0;
 
@@ -151,7 +151,7 @@ public class FirstPersonRenderer
             }
 
             if (mapX < 0 || mapX >= _maze.GetLength(1) || mapY < 0 || mapY >= _maze.GetLength(0))
-                return (0.0f, 0.0f, null); // Hit the edge of the map
+                return (0.0f, 0.0f, 0.0f, null); // Hit the edge of the map
             
             // Check wall hit
             if (_maze[mapY, mapX] > 0)
@@ -183,7 +183,11 @@ public class FirstPersonRenderer
         // Correct fisheye
         distance *= MathF.Cos(rayAngle - _player.Angle);
 
-        return (distance, wallX, _wallTextures[wallType]);
+        // Control the brightness of the texture based on the distance
+        float brightness = 1.0f / (1.0f + distance * 0.5f);
+        brightness = MathHelper.Clamp(brightness, 0.0f, 1.0f);
+
+        return (distance, brightness, wallX, _wallTextures[wallType]);
     }
 
     /// <summary>
@@ -205,15 +209,16 @@ public class FirstPersonRenderer
     /// <param name="wallHeight">Height of the wall slice</param>
     /// <param name="wallX">Horizontal texture coordinate (0–1)</param>
     /// <param name="texture">Wall texture to draw</param>
-    private void DrawWallSlice(int x, int wallHeight, float wallX, Texture2D texture)
+    private void DrawWallSlice(int x, int wallHeight, float wallX, Texture2D texture, float textureBrightness)
     {
         int textureX = (int)(wallX * texture.Width);
+        Color shadeColor = new Color(textureBrightness, textureBrightness, textureBrightness);
 
         Rectangle sourceRect = new Rectangle(textureX, 0, 1, texture.Height);
 
         int drawY = (_screenHeight - wallHeight) / 2;
     
         Rectangle destRect = new Rectangle(x, drawY, 1, wallHeight);
-        _spriteBatch.Draw(texture, destRect, sourceRect, Color.White);
+        _spriteBatch.Draw(texture, destRect, sourceRect, shadeColor);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -26,6 +27,7 @@ public class MazeGame : Game
     private SpriteFont _spriteFont;
     private Texture2D _pixel;
     private Stopwatch _timer;
+    private List<TimeSpan> _levelTimes;
 
     public MazeGame()
     {
@@ -45,6 +47,7 @@ public class MazeGame : Game
         _wallTextures = new Dictionary<int, Texture2D>();
         _ml = new MazeLogic();
         _timer = new Stopwatch();
+        _levelTimes = new List<TimeSpan>();
 
         // Logical maze size (n x n)
         _mazeSize = new Random();
@@ -89,9 +92,18 @@ public class MazeGame : Game
             _ml.PrintMaze(mapY, mapX);
         }
 
+        // OOB checking
+        if (mapX < 0 || mapX >= _ml.Maze.GetLength(1) || mapY < 0 || mapY >= _ml.Maze.GetLength(0))
+        {
+            base.Update(gameTime);
+            return;
+        }
+
         // Generate new map when goal was reached
         // Play for only 5 levels
         if(_ml.Maze[mapY, mapX] == 4)
+        {
+            _levelTimes.Add(_timer.Elapsed);
             if (_levelCount != 4)
             {
                 _levelCount++;
@@ -99,11 +111,10 @@ public class MazeGame : Game
             }
             else
             {
-                _timer.Stop();
-                Console.Clear();
-                Console.WriteLine("Final time: " + _timer.Elapsed.ToString(@"m\:ss"));
+                ShowFinalTimes();
                 Exit();
             }
+        }
 
         base.Update(gameTime);
     }
@@ -163,5 +174,22 @@ public class MazeGame : Game
             SCREEN_WIDTH,
             SCREEN_HEIGHT
         );
+
+        _timer.Restart();
+    }
+
+    private void ShowFinalTimes()
+    {
+        _timer.Stop();
+        Console.Clear();
+
+        TimeSpan totalTime = TimeSpan.Zero;
+        Console.WriteLine("Final results:\n-----------------");
+        for (int i = 0; i < _levelTimes.ToArray().Length; i++)
+        {
+            Console.WriteLine($"Level {i + 1}:    {_levelTimes[i]:m\\:ss}");
+            totalTime += _levelTimes[i];
+        }
+        Console.WriteLine($"Total time: {totalTime:m\\:ss}");
     }
 }

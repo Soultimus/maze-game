@@ -126,7 +126,7 @@ public class MazeLogic
     /// <summary>
     /// Prints a visual representation of the maze to the console
     /// </summary>
-    public void PrintMaze()
+    public void PrintMaze(int mapY, int mapX)
     {
         Console.Clear();
         int rows = Maze.GetLength(0);
@@ -137,7 +137,9 @@ public class MazeLogic
             for (int c = 0; c < cols; c++) {
                 int tile = Maze[r, c];
 
-                if (tile == 0)
+                if (r == mapY && c == mapX)
+                    Console.Write('●');
+                else if (tile == 0)
                     Console.Write(' ');
                 else if (tile == 3)
                     Console.Write('S');
@@ -148,6 +150,7 @@ public class MazeLogic
             }
             Console.WriteLine("");
         }
+        Console.WriteLine("You are here ➡ ●");
     }
 
     /// <summary>

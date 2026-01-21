@@ -7,7 +7,7 @@ A DDA-based raycaster built with Monogame where you can explore a randomly gener
 ## Controls
 - `W, A, S, D`: Move Around
 - `L & R Arrow Keys`: Rotate Camera
-- `M`: Show map on console
+- `M`: Show map on console once (Try your best not to use it though!)
 
 ## Note: This is a work in progress
 Some things left to do:

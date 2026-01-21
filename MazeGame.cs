@@ -78,16 +78,16 @@ public class MazeGame : Game
         if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        if (!_mapUsed && IsKeyPressed(Keys.M))
-        {
-            _mapUsed = true;
-            _ml.PrintMaze();
-        }
-
         _player.Update(gameTime);
 
         int mapX = (int)_player.Position.X;
         int mapY = (int)_player.Position.Y;
+
+        if (!_mapUsed && IsKeyPressed(Keys.M))
+        {
+            _mapUsed = true;
+            _ml.PrintMaze(mapY, mapX);
+        }
 
         // Generate new map when goal was reached
         // Play for only 5 levels

@@ -84,7 +84,7 @@ public class FirstPersonRenderer
     /// </summary>
     /// <param name="rayAngle">The angle of the ray in radians</param>
     /// <returns>
-    /// A tuple containing the distance to the wall, the horizontal texture coordinate, and the appropriate wall texture
+    /// A tuple containing the distance to the wall, the brightness of it, the horizontal texture coordinate, and the appropriate texture
     /// </returns>
     private (float, float, float, Texture2D) CastRayDDA(float rayAngle)
     {
@@ -209,6 +209,7 @@ public class FirstPersonRenderer
     /// <param name="wallHeight">Height of the wall slice</param>
     /// <param name="wallX">Horizontal texture coordinate (0–1)</param>
     /// <param name="texture">Wall texture to draw</param>
+    /// <param name="textureBrightness">Wall texture brightness level</param>
     private void DrawWallSlice(int x, int wallHeight, float wallX, Texture2D texture, float textureBrightness)
     {
         int textureX = (int)(wallX * texture.Width);

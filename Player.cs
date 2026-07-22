@@ -11,6 +11,7 @@ public class Player
 {
     private const float MOVEMENT_SPEED = 2.5f;
     private const float ROTATION_SPEED = 1.5f;
+    private const float RADIUS = 0.3f;
     private const int FOV_DEGREES = 60;
 
     /// <summary>
@@ -33,23 +34,27 @@ public class Player
     /// </summary>
     public float Y {get; private set;}
 
+    public int[,] Maze {get;}
+
     /// <summary>
     /// Creates a new player at the given position and angle
     /// </summary>
     /// <param name="x">Initial X position</param>
     /// <param name="y">Initial Y position</param>
     /// <param name="angle">Initial facing angle in degrees</param>
-    public Player(float x, float y, float angle)
+    public Player(float x, float y, float angle, int[,] maze)
     {
         this.X = x;
         this.Y = y;
         this.Angle = (float)(angle * Math.PI / 180); // Degrees to Radians
 
         this.FOV = (float)(FOV_DEGREES * Math.PI / 180);
+
+        this.Maze = maze;
     }
 
     /// <summary>
-    /// Updates the player's movement and rotation based on keyboard input
+    /// Updates the player's movement and rotation based on keyboard input while checking for collision
     /// </summary>
     /// <param name="gameTime">Elapsed time since last frame</param>
     public void Update(GameTime gameTime)
@@ -72,29 +77,49 @@ public class Player
         // Forward
         if (keyboard.IsKeyDown(Keys.W))
         {
-            X += dirX * moveStep;
-            Y += dirY * moveStep;
+            float candidateX = X + dirX * moveStep;
+            if (!IsBlocked(candidateX, Y))
+                X = candidateX;
+
+            float candidateY = Y + dirY * moveStep;
+            if (!IsBlocked(X, candidateY))
+                Y = candidateY;
         }
 
         // Back
         if (keyboard.IsKeyDown(Keys.S))
         {
-            X -= dirX * moveStep;
-            Y -= dirY * moveStep;
+            float candidateX = X - dirX * moveStep;
+            if (!IsBlocked(candidateX, Y))
+                X = candidateX;
+
+            float candidateY = Y - dirY * moveStep;
+            if (!IsBlocked(X, candidateY))
+                Y = candidateY;
         }
 
         // Strafe Left
         if (keyboard.IsKeyDown(Keys.A))
         {
-            X += dirY * moveStep;
-            Y -= dirX * moveStep;
+            float candidateX = X + dirY * moveStep;
+            if (!IsBlocked(candidateX, Y))
+                X = candidateX;
+
+            float candidateY = Y - dirX * moveStep;
+            if (!IsBlocked(X, candidateY))
+                Y = candidateY;
         }
 
         // Strafe Right
         if (keyboard.IsKeyDown(Keys.D))
         {
-            X -= dirY * moveStep;
-            Y += dirX * moveStep;
+            float candidateX = X - dirY * moveStep;
+            if (!IsBlocked(candidateX, Y))
+                X = candidateX;
+
+            float candidateY = Y + dirX * moveStep;
+            if (!IsBlocked(X, candidateY))
+                Y = candidateY;
         }
     }
 
@@ -102,4 +127,18 @@ public class Player
     /// Player's position as a Vector2
     /// </summary>
     public Vector2 Position => new Vector2(X, Y);
+
+    private bool IsInWall(float x, float y)
+    {
+        if ((int)x < 0 || (int)y < 0 || (int)x >= Maze.GetLength(1) || (int)y >= Maze.GetLength(0)) 
+            return true; // OOB Check
+
+        return Maze[(int)y, (int)x] > 0;
+    }
+
+    private bool IsBlocked(float x, float y)
+    {
+        // Check left, right, top, and bottom edges respectively of player circle
+        return (IsInWall(x - RADIUS, y) || IsInWall(x + RADIUS, y) || IsInWall(x, y - RADIUS) || IsInWall(x, y + RADIUS));
+    }
 }

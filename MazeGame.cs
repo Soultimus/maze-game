@@ -164,7 +164,7 @@ public class MazeGame : Game
 
         _ml.GenerateMaze(size);
 
-        _player = new Player(1.5f, _ml.PlayerSpawnY, 0);
+        _player = new Player(1.5f, _ml.PlayerSpawnY, 0, _ml.Maze);
 
         _fpr = new FirstPersonRenderer(
             _ml.Maze,

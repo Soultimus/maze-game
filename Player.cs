@@ -130,10 +130,13 @@ public class Player
 
     private bool IsInWall(float x, float y)
     {
-        if ((int)x < 0 || (int)y < 0 || (int)x >= Maze.GetLength(1) || (int)y >= Maze.GetLength(0)) 
+        int integerX = (int)x;
+        int integerY = (int)y;
+
+        if (integerX < 0 || integerY < 0 || integerX >= Maze.GetLength(1) || integerY >= Maze.GetLength(0)) 
             return true; // OOB Check
 
-        return Maze[(int)y, (int)x] > 0;
+        return Maze[integerY, integerX] > 0 && Maze[integerY, integerX] <= 3;
     }
 
     private bool IsBlocked(float x, float y)

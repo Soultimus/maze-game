@@ -57,9 +57,9 @@
 /processorParam:MakeSquare=false
 /processorParam:TextureFormat=Color
 
-#begin fonts/big-shot.spritefont
+#begin fonts/Fixedsys62.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
-/build:fonts/big-shot.spritefont
+/build:fonts/Fixedsys62.spritefont

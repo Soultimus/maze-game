@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
+using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace MazeGame;
 
@@ -14,6 +15,7 @@ public class MazeGame : Game
     private const int SCREEN_WIDTH = 640; 
 
     private bool _mapUsed;
+    private bool _isLevelComplete;
     private int _levelCount;
     private Dictionary<int, Texture2D> _wallTextures;
     private FirstPersonRenderer _fpr;
@@ -59,7 +61,7 @@ public class MazeGame : Game
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
-        _spriteFont = Content.Load<SpriteFont>("fonts/big-shot");
+        _spriteFont = Content.Load<SpriteFont>("fonts/Fixedsys62");
 
         _pixel = new Texture2D(GraphicsDevice, 1, 1);
         _pixel.SetData([Color.White]);
@@ -78,8 +80,34 @@ public class MazeGame : Game
         _previousKeyboardState = _currentKeyboardState;
         _currentKeyboardState = Keyboard.GetState();
 
+        // Quit
         if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
+        
+        // Generate map when E key is preesed
+        if (_isLevelComplete && IsKeyPressed(Keys.E))
+        {
+            _isLevelComplete = false;
+
+            // Play for only 5 levels
+            if (_levelCount != 4)
+            {
+                _levelCount++;
+                GenerateWorld(_mazeSize.Next(5, 11));
+            }
+            else
+            {
+                ShowFinalTimes();
+                Exit();
+            }
+        }
+
+        // Freeze game until E key is pressed
+        if (_isLevelComplete)
+        {
+            base.Update(gameTime);
+            return;
+        }
 
         _player.Update(gameTime);
 
@@ -99,21 +127,11 @@ public class MazeGame : Game
             return;
         }
 
-        // Generate new map when goal was reached
-        // Play for only 5 levels
+        // Check if player reaches exit, mark as complete
         if(_ml.Maze[mapY, mapX] == 4)
         {
             _levelTimes.Add(_timer.Elapsed);
-            if (_levelCount != 4)
-            {
-                _levelCount++;
-                GenerateWorld(_mazeSize.Next(5, 11));
-            }
-            else
-            {
-                ShowFinalTimes();
-                Exit();
-            }
+            _isLevelComplete = true;
         }
 
         base.Update(gameTime);
@@ -130,23 +148,48 @@ public class MazeGame : Game
 
         // Render the maze
         _fpr.Render();
+        
+        // Results screen logic
+        if (_isLevelComplete)
+        {
+            // Dim screen
+            _spriteBatch.Draw(_pixel, new Rectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT), new Color(0, 0, 0, 150));
 
-        string levelText = $"LEVEL {_levelCount + 1}";
-        Vector2 textSize = _spriteFont.MeasureString(levelText) / 2;
-        Vector2 position = new Vector2(
-            textSize.X,
-            12
-        );
-        _spriteBatch.DrawString(_spriteFont, levelText, position, Color.Yellow, 0, textSize, 1.0f, SpriteEffects.None, 0f);
+            // Write results so far
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"Level {_levelCount + 1} complete\n");
+            sb.AppendLine(GetTimes());
+            sb.AppendLine("Press E to continue");
+            string resultsText = sb.ToString();
+            Vector2 textSize = _spriteFont.MeasureString(resultsText) / 2;
+            Vector2 position = new Vector2(
+                SCREEN_WIDTH / 2f,
+                SCREEN_HEIGHT / 2f
+            );
+            _spriteBatch.DrawString(_spriteFont, resultsText, position, Color.Yellow, 0, textSize, 1.0f, SpriteEffects.None, 0f);
+        }
 
-        // Display the time in the right corner
-        string timerText = _timer.Elapsed.ToString(@"m\:ss");
-        textSize = _spriteFont.MeasureString(timerText) / 2;
-        position = new Vector2(
-            SCREEN_WIDTH - textSize.X,
-            12
-        );
-        _spriteBatch.DrawString(_spriteFont, timerText, position, Color.Yellow, 0, textSize, 1.0f, SpriteEffects.None, 0f);
+        // Level and time display logic
+        if (!_isLevelComplete)
+        {
+            // Display the level number in the left corner
+            string levelText = $"LEVEL {_levelCount + 1}";
+            Vector2 textSize = _spriteFont.MeasureString(levelText) / 2;
+            Vector2 position = new Vector2(
+                textSize.X,
+                12
+            );
+            _spriteBatch.DrawString(_spriteFont, levelText, position, Color.Yellow, 0, textSize, 1.0f, SpriteEffects.None, 0f);
+
+            // Display the time in the right corner
+            string timerText = _timer.Elapsed.ToString(@"m\:ss");
+            textSize = _spriteFont.MeasureString(timerText) / 2;
+            position = new Vector2(
+                SCREEN_WIDTH - textSize.X,
+                12
+            );
+            _spriteBatch.DrawString(_spriteFont, timerText, position, Color.Yellow, 0, textSize, 1.0f, SpriteEffects.None, 0f);
+        }
 
         _spriteBatch.End();
 
@@ -176,6 +219,21 @@ public class MazeGame : Game
         );
 
         _timer.Restart();
+    }
+
+    private string GetTimes()
+    {
+        TimeSpan totalTime = TimeSpan.Zero;
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < 5; i++)
+        {
+            TimeSpan time = i < _levelTimes.Count ? _levelTimes[i] : TimeSpan.Zero;
+            sb.AppendLine($"Level {i + 1}:     {time:m\\:ss}");
+            totalTime += time;
+        }
+        sb.AppendLine($"Total time:  {totalTime:m\\:ss}");
+        return sb.ToString();
     }
 
     private void ShowFinalTimes()
